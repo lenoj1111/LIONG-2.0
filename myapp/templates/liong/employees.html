@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Management — Add</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="components/navbar.js"></script>
+    <script src="components/footer.js"></script>
+    <script src="sidebar.js"></script>
+</head>
+<body class="bg-gray-50">
+    <custom-sidebar></custom-sidebar>
+    <main class="container mx-auto px-4 py-8" style="margin-left:250px;">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+            <h1 class="text-3xl font-bold text-gray-900">Employee Management</h1>
+        </div>
+
+        <!-- Employee count box -->
+        <div class="mb-6">
+            <div class="bg-white rounded-lg shadow p-4 w-full md:w-64">
+                <div class="text-sm text-gray-500">Total Employees</div>
+                <div id="employeeCount" class="text-2xl font-bold text-gray-900">0</div>
+            </div>
+        </div>
+
+        <!-- Add Employee Form -->
+        <div class="bg-white rounded-lg shadow p-6 mb-8">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6">Add New Employee</h2>
+            <form id="employeeForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                    <input type="text" id="employeeName" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter full name" required>
+                </div>
+
+                <!-- Contact type: Email or Phone -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Contact</label>
+                    <div class="flex gap-3 items-center mb-2">
+                        <label class="inline-flex items-center text-sm">
+                            <input type="radio" name="contactType" value="email" id="contactTypeEmail" class="form-radio" checked>
+                            <span class="ml-2">Email</span>
+                        </label>
+                        <label class="inline-flex items-center text-sm">
+                            <input type="radio" name="contactType" value="phone" id="contactTypePhone" class="form-radio">
+                            <span class="ml-2">Phone</span>
+                        </label>
+                    </div>
+                    <input type="email" id="employeeContact" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter email (optional)">
+                    <p class="text-xs text-gray-500 mt-1">Leave empty to store as "N/A".</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Role</label>
+                    <input list="rolesList" id="employeeRole" name="employeeRole" placeholder="Type or select a role" 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                    <datalist id="rolesList">
+                        <option value="Manager">
+                        <option value="Supervisor">
+                        <option value="Staff">
+                        <option value="Warehouse">
+                    </datalist>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Date Joined</label>
+                    <input type="date" id="employeeDate" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                </div>
+                <div class="md:col-span-2 flex justify-end pt-2">
+                    <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium">Add Employee</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Remove / Manage Employees Section -->
+        <div class="bg-white rounded-lg shadow p-6 mb-8">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6">Manage Employees</h2>
+            
+            <!-- Search and Sort Controls -->
+            <div class="flex flex-col md:flex-row gap-4 mb-6">
+                <div class="relative flex-1">
+                    <input type="text" id="searchInput" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Search employees...">
+                    <button id="searchBtn" class="absolute right-2 top-1/2 transform -translate-y-1/2 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition font-medium text-sm">
+                        Search
+                    </button>
+                </div>
+                <select id="sortRoleBtn" class="px-4 py-2 bg-white border border-gray-300 text-gray-800 rounded-lg hover:bg-gray-50 transition font-medium">
+                    <option value="">All Roles</option>
+                </select>
+            </div>
+
+            <div id="employeeListContainer" class="overflow-x-auto">
+                <!-- Employee list will be rendered here -->
+                <table id="employeeListTable" class="min-w-full divide-y divide-gray-200 hidden">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-2 text-left text-sm font-medium text-gray-500">Name</th>
+                            <th class="px-4 py-2 text-left text-sm font-medium text-gray-500">Contact</th>
+                            <th class="px-4 py-2 text-left text-sm font-medium text-gray-500">Role</th>
+                            <th class="px-4 py-2 text-left text-sm font-medium text-gray-500">Date Joined</th>
+                            <th class="px-4 py-2 text-right text-sm font-medium text-gray-500">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="employeeListBody" class="bg-white divide-y divide-gray-200"></tbody>
+                </table>
+
+                <div id="noEmployeesMessage" class="text-sm text-gray-500 p-4">No employees added yet.</div>
+            </div>
+
+            <!-- Pagination Controls -->
+            <div id="paginationContainer" class="flex justify-center items-center gap-2 mt-6 hidden">
+                <button id="prevBtn" class="px-3 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition">Previous</button>
+                <div id="pageNumbers" class="flex gap-1"></div>
+                <button id="nextBtn" class="px-3 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition">Next</button>
+            </div>
+        </div>
+
+        <!-- NOTE: Employee list moved to employee-list.html -->
+    </main>
+    <custom-footer></custom-footer>
+
+    <script>
+        let employees = JSON.parse(localStorage.getItem('employees')) || [];
+        let filteredEmployees = [...employees];
+        let currentPage = 1;
+        const itemsPerPage = 10;
+        let selectedRole = '';
+
+        function populateRoleFilter() {
+            const uniqueRoles = [...new Set(employees.map(emp => emp.role).filter(role => role && role !== ''))].sort();
+            const sortBtn = document.getElementById('sortRoleBtn');
+            
+            sortBtn.innerHTML = '<option value="">All Roles</option>';
+            uniqueRoles.forEach(role => {
+                const option = document.createElement('option');
+                option.value = role;
+                option.textContent = role;
+                sortBtn.appendChild(option);
+            });
+        }
+
+        function normalizeEmployees() {
+            let changed = false;
+            employees = employees.map(emp => {
+                if (!emp.contactType && ('email' in emp || 'contact' in emp)) {
+                    changed = true;
+                    const contactRaw = emp.contact || emp.email || '';
+                    return {
+                        id: emp.id || ('EMP-' + (Date.now().toString().slice(-6))),
+                        name: emp.name || '',
+                        contactType: contactRaw && contactRaw !== 'N/A' && contactRaw.includes('@') ? 'email' :
+                                     (contactRaw && contactRaw !== 'N/A') ? 'phone' : 'email',
+                        contactValue: contactRaw && contactRaw !== '' ? contactRaw : 'N/A',
+                        role: emp.role || '',
+                        date: emp.date || (emp.joined || '') || ''
+                    };
+                }
+                return {
+                    id: emp.id || ('EMP-' + (Date.now().toString().slice(-6))),
+                    name: emp.name || '',
+                    contactType: emp.contactType || 'email',
+                    contactValue: (emp.contactValue || emp.email || 'N/A') || 'N/A',
+                    role: emp.role || '',
+                    date: emp.date || ''
+                };
+            });
+            if (changed) localStorage.setItem('employees', JSON.stringify(employees));
+        }
+
+        function generateId() {
+            return 'EMP-' + Date.now().toString().slice(-6);
+        }
+
+        function updateEmployeeCount() {
+            const el = document.getElementById('employeeCount');
+            if (el) el.textContent = employees.length;
+        }
+
+        function setContactInputType(type) {
+            const input = document.getElementById('employeeContact');
+            if (!input) return;
+            if (type === 'phone') {
+                input.type = 'tel';
+                input.placeholder = 'Enter phone (optional)';
+                input.pattern = "[0-9+\\-() ]*";
+            } else {
+                input.type = 'email';
+                input.placeholder = 'Enter email (optional)';
+                input.removeAttribute('pattern');
+            }
+        }
+
+        function addEmployee(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('employeeName').value.trim();
+            const role = document.getElementById('employeeRole').value.trim();
+            const date = document.getElementById('employeeDate').value || new Date().toISOString().slice(0,10);
+
+            // Check if employee with same name already exists
+            const nameExists = employees.some(emp => emp.name.toLowerCase() === name.toLowerCase());
+            if (nameExists) {
+                alert(`✗ Employee with name "${name}" already exists! Please use a different name.`);
+                return;
+            }
+
+            const contactType = document.querySelector('input[name="contactType"]:checked')?.value || 'email';
+            let contactValue = (document.getElementById('employeeContact').value || '').trim();
+            contactValue = contactValue === '' ? 'N/A' : contactValue;
+
+            const newEmployee = {
+                id: generateId(),
+                name,
+                contactType,
+                contactValue,
+                role,
+                date
+            };
+
+            employees.push(newEmployee);
+            localStorage.setItem('employees', JSON.stringify(employees));
+
+            document.getElementById('employeeForm').reset();
+            setContactInputType('email');
+            updateEmployeeCount();
+            currentPage = 1;
+            filterEmployees();
+            populateRoleFilter();
+            
+            // Alert for successful addition
+            alert(`✓ Employee "${name}" has been added successfully!`);
+        }
+
+        function filterEmployees() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+            const roleFilter = document.getElementById('sortRoleBtn').value;
+            
+            filteredEmployees = employees.filter(emp => {
+                const nameMatch = emp.name.toLowerCase().includes(searchTerm);
+                const contactMatch = emp.contactValue.toLowerCase().includes(searchTerm);
+                const roleMatch = emp.role.toLowerCase().includes(searchTerm);
+                const searchMatch = nameMatch || contactMatch || roleMatch;
+                
+                const roleFilterMatch = roleFilter === '' || emp.role === roleFilter;
+                
+                return searchMatch && roleFilterMatch;
+            });
+
+            currentPage = 1;
+            renderEmployeeList();
+            renderPagination();
+        }
+
+        function sortByRole() {
+            filteredEmployees.sort((a, b) => {
+                const roleA = a.role.toLowerCase();
+                const roleB = b.role.toLowerCase();
+                if (sortByRoleAsc) {
+                    return roleA.localeCompare(roleB);
+                } else {
+                    return roleB.localeCompare(roleA);
+                }
+            });
+            sortByRoleAsc = !sortByRoleAsc;
+            currentPage = 1;
+            renderEmployeeList();
+            updateSortIcon();
+        }
+
+        function updateSortIcon() {
+            const icon = document.getElementById('sortIcon');
+            if (icon) {
+                icon.textContent = sortByRoleAsc ? '↓' : '↑';
+            }
+        }
+
+        function renderEmployeeList() {
+            const tbody = document.getElementById('employeeListBody');
+            const table = document.getElementById('employeeListTable');
+            const noMsg = document.getElementById('noEmployeesMessage');
+
+            if (!tbody || !table || !noMsg) return;
+
+            tbody.innerHTML = '';
+
+            if (filteredEmployees.length === 0) {
+                table.classList.add('hidden');
+                noMsg.classList.remove('hidden');
+                return;
+            }
+
+            table.classList.remove('hidden');
+            noMsg.classList.add('hidden');
+
+            const startIdx = (currentPage - 1) * itemsPerPage;
+            const endIdx = startIdx + itemsPerPage;
+            const pageEmployees = filteredEmployees.slice(startIdx, endIdx);
+
+            pageEmployees.forEach(emp => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="px-4 py-2 text-sm text-gray-700">${escapeHtml(emp.name)}</td>
+                    <td class="px-4 py-2 text-sm text-gray-700">${escapeHtml(emp.contactValue || 'N/A')} <span class="text-xs text-gray-400">(${escapeHtml(emp.contactType || 'email')})</span></td>
+                    <td class="px-4 py-2 text-sm text-gray-700">${escapeHtml(emp.role)}</td>
+                    <td class="px-4 py-2 text-sm text-gray-700">${escapeHtml(emp.date)}</td>
+                    <td class="px-4 py-2 text-sm text-right">
+                        <button data-id="${emp.id}" class="remove-btn inline-flex items-center px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm">Remove</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            tbody.querySelectorAll('.remove-btn').forEach(btn => {
+                btn.addEventListener('click', (ev) => {
+                    const id = ev.currentTarget.getAttribute('data-id');
+                    removeEmployee(id);
+                });
+            });
+        }
+
+        function renderPagination() {
+            const paginationContainer = document.getElementById('paginationContainer');
+            const pageNumbers = document.getElementById('pageNumbers');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+
+            if (!paginationContainer || !pageNumbers) return;
+
+            const totalPages = Math.ceil(filteredEmployees.length / itemsPerPage);
+
+            if (totalPages <= 1) {
+                paginationContainer.classList.add('hidden');
+                return;
+            }
+
+            paginationContainer.classList.remove('hidden');
+            pageNumbers.innerHTML = '';
+
+            for (let i = 1; i <= totalPages; i++) {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.textContent = i;
+                btn.className = `px-2 py-1 rounded transition ${i === currentPage ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}`;
+                btn.addEventListener('click', () => {
+                    currentPage = i;
+                    renderEmployeeList();
+                    renderPagination();
+                    document.getElementById('employeeListContainer').scrollIntoView({ behavior: 'smooth' });
+                });
+                pageNumbers.appendChild(btn);
+            }
+
+            prevBtn.disabled = currentPage === 1;
+            nextBtn.disabled = currentPage === totalPages;
+            prevBtn.classList.toggle('opacity-50 cursor-not-allowed', currentPage === 1);
+            nextBtn.classList.toggle('opacity-50 cursor-not-allowed', currentPage === totalPages);
+
+            prevBtn.onclick = () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderEmployeeList();
+                    renderPagination();
+                    document.getElementById('employeeListContainer').scrollIntoView({ behavior: 'smooth' });
+                }
+            };
+
+            nextBtn.onclick = () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderEmployeeList();
+                    renderPagination();
+                    document.getElementById('employeeListContainer').scrollIntoView({ behavior: 'smooth' });
+                }
+            };
+        }
+
+        function removeEmployee(id) {
+            if (!id) return;
+            const emp = employees.find(e => e.id === id);
+            if (!emp) return;
+            const confirmed = confirm(`Remove employee "${emp.name}"? This action cannot be undone.`);
+            if (!confirmed) return;
+            
+            employees = employees.filter(e => e.id !== id);
+            localStorage.setItem('employees', JSON.stringify(employees));
+            updateEmployeeCount();
+            filterEmployees();
+            populateRoleFilter();
+            
+            // Alert for successful removal
+            alert(`✓ Employee "${emp.name}" has been removed successfully!`);
+        }
+
+        function escapeHtml(str) {
+            if (!str && str !== 0) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            normalizeEmployees();
+            updateEmployeeCount();
+            filteredEmployees = [...employees];
+            populateRoleFilter();
+            renderEmployeeList();
+            renderPagination();
+
+            document.getElementById('contactTypeEmail').addEventListener('change', () => setContactInputType('email'));
+            document.getElementById('contactTypePhone').addEventListener('change', () => setContactInputType('phone'));
+            document.getElementById('employeeForm').addEventListener('submit', addEmployee);
+            document.getElementById('searchInput').addEventListener('input', filterEmployees);
+            document.getElementById('sortRoleBtn').addEventListener('change', filterEmployees);
+            
+            // Add event listener for the search button
+            document.getElementById('searchBtn').addEventListener('click', filterEmployees);
+            
+            // Add event listener for Enter key in search input
+            document.getElementById('searchInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    filterEmployees();
+                }
+            });
+
+            if (window.feather) feather.replace();
+        });
+    </script>
+</body>
+</html>
