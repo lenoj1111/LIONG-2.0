@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Employee Product Requests</title>
+  <title>LIONG | Employee Product Requests</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
@@ -18,39 +18,8 @@
       <h1 class="text-2xl font-bold">Employee Request</h1>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-      <!-- Request to Add Product -->
-      <section class="bg-white rounded-lg shadow p-6">
-        <h2 class="text-lg font-semibold mb-4">Request to Add Product</h2>
-        <form id="addProductForm" class="grid grid-cols-1 gap-3">
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Requested By (Employee Name)</label>
-            <input id="requestedByAdd" type="text" class="w-full px-3 py-2 border rounded" placeholder="Your name">
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Product Name</label>
-            <input id="productName" required type="text" class="w-full px-3 py-2 border rounded" placeholder="e.g. Widget A">
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Unit</label>
-            <input id="productUnit" required type="text" class="w-full px-3 py-2 border rounded" placeholder="e.g. pcs, box, kg (you can type)">
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Quantity</label>
-            <input id="productQuantity" type="number" min="0" value="0" class="w-full px-3 py-2 border rounded">
-          </div>
-
-          <div class="flex justify-end gap-2 pt-2">
-            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Request to Add</button>
-          </div>
-        </form>
-      </section>
-
-      <!-- Stock Out Section -->
+    <div class="grid grid-cols-1 gap-6">
+      <!-- Request Stock Out -->
       <section class="bg-white rounded-lg shadow p-6">
         <h2 class="text-lg font-semibold mb-4">Request Stock Out</h2>
 
@@ -100,15 +69,12 @@
     let requests = JSON.parse(localStorage.getItem(KEY_REQUESTS)) || [];
 
     // DOM refs
-    const addProductForm = document.getElementById('addProductForm');
     const requestForm = document.getElementById('requestForm');
-    const requestedByAdd = document.getElementById('requestedByAdd');
     const requestedByOut = document.getElementById('requestedByOut');
     const productSearch2 = document.getElementById('productSearch2');
     const productSelect = document.getElementById('productSelect');
     const productHint = document.getElementById('productHint');
 
-    // Populate product select
     function populateProductSelect() {
       const searchTerm = productSearch2.value.toLowerCase();
       productSelect.innerHTML = '<option value="">-- Select product --</option>';
@@ -130,66 +96,8 @@
       }
     }
 
-    // CRUD Actions
-    function saveProducts() {
-      localStorage.setItem(KEY_PRODUCTS, JSON.stringify(products));
-    }
-
-    function saveRequests() {
-      localStorage.setItem(KEY_REQUESTS, JSON.stringify(requests));
-    }
-
-    addProductForm.addEventListener('submit', (ev) => {
-      ev.preventDefault();
-      const requestedBy = requestedByAdd.value.trim();
-      const name = document.getElementById('productName').value.trim();
-      const unit = document.getElementById('productUnit').value.trim();
-      const qty = Number(document.getElementById('productQuantity').value) || 0;
-      
-      if (!requestedBy) {
-        alert('Please enter your name.');
-        return;
-      }
-      if (!name || !unit) { 
-        alert('Product name and unit are required.'); 
-        return; 
-      }
-
-      // Check for duplicate
-      const exists = products.some(p => p.name.toLowerCase() === name.toLowerCase());
-      if (exists) {
-        alert(`Product "${name}" already exists.`);
-        return;
-      }
-
-      const prod = {
-        id: generateId('PROD'),
-        name,
-        unit,
-        quantity: qty,
-        dateAdded: todayISO()
-      };
-
-      // Create stock in request
-      const req = {
-        id: generateId('REQ'),
-        date: todayISO(),
-        requestedBy,
-        productId: prod.id,
-        productName: prod.name,
-        unit: prod.unit,
-        type: 'in',
-        quantity: qty
-      };
-
-      products.push(prod);
-      requests.push(req);
-      saveProducts();
-      saveRequests();
-      populateProductSelect();
-      addProductForm.reset();
-      alert(`✓ Product "${name}" requested by ${requestedBy} and stock in recorded.`);
-    });
+    function saveProducts() { localStorage.setItem(KEY_PRODUCTS, JSON.stringify(products)); }
+    function saveRequests() { localStorage.setItem(KEY_REQUESTS, JSON.stringify(requests)); }
 
     requestForm.addEventListener('submit', (ev) => {
       ev.preventDefault();
@@ -245,10 +153,9 @@
       alert(`✓ Stock out requested by ${requestedBy} for "${product.name}" (${qty} ${product.unit}).`);
     });
 
-    // Event listeners
+    // Search listener
     productSearch2.addEventListener('input', populateProductSelect);
 
-    // Init
     document.addEventListener('DOMContentLoaded', () => {
       if (window.feather) feather.replace();
 
