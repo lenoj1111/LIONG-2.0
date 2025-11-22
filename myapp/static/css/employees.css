@@ -1,0 +1,206 @@
+:root{
+    --primary: #6b21a8;
+    --primary-dark: #5b189a;
+    --gold: #f59e0b;
+    --gold-dark: #b06f00;
+    --muted: #6b7280;
+    --bg: #f9fafb;
+    --card: #ffffff;
+}
+
+/* Page base */
+body{
+    background-color: var(--bg);
+
+    /* subtle vignette / shadowed background instead of gradient */
+    background-image:
+      radial-gradient(ellipse at center, rgba(0,0,0,0.04) 0%, rgba(0,0,0,0.02) 40%, transparent 70%),
+      radial-gradient(ellipse at top left, rgba(0,0,0,0.02) 0%, transparent 30%);
+    background-attachment: fixed;
+    background-size: cover, cover;
+    background-repeat: no-repeat;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color-scheme: light;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+/* Main container */
+main.container{
+    max-width: 80rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+/* Header */
+h1{
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: #ffffff; /* Employee Management title in white */
+}
+
+/* Search area */
+.relative{ position: relative; }
+#searchBtn{
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.375rem;
+    /* purple primary gradient for search button */
+    background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 0.875rem;
+}
+
+/* Small screens: stack search button */
+@media (max-width:640px){
+    #searchBtn{ position: static; transform:none; display:inline-block; margin-top:0.5rem; width:auto; }
+    .relative{ position: static; }
+}
+
+/* Cards */
+.card, .bg-white.rounded-lg.shadow{
+    background: var(--card);
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    padding: 1rem;
+}
+
+/* Form controls */
+#employeeForm input[type="text"],
+#employeeForm input[type="date"],
+#employeeForm input[type="email"],
+#employeeForm input[type="tel"],
+#employeeForm select,
+#employeeForm textarea{
+    width:100%;
+    padding:0.5rem 0.75rem;
+    border:1px solid #d1d5db;
+    border-radius:0.5rem;
+    background:#fff;
+    color:#111827;
+    box-sizing:border-box;
+}
+#employeeForm input:focus,
+#employeeForm select:focus,
+#employeeForm textarea:focus{
+    outline:none;
+    border-color:var(--primary);
+    box-shadow:0 0 0 3px rgba(107,34,168,0.08);
+}
+
+/* Table container */
+#employeeListContainer{ overflow-x:auto; -webkit-overflow-scrolling: touch; }
+
+/* Table */
+table{
+    width:100%;
+    border-collapse:collapse;
+    background:var(--card);
+    table-layout:auto;
+    min-width:700px;
+}
+thead{ background:#f3f4f6; }
+th, td{
+    padding:0.75rem 1rem;
+    vertical-align:middle;
+    font-size:0.9375rem;
+    color:#374151;
+}
+th{
+    font-weight:600;
+    color:#6b7280;
+    text-transform:uppercase;
+    letter-spacing:.02em;
+    font-size:.75rem;
+}
+
+/* Actions column */
+table th:last-child, table td:last-child{
+    width:140px;
+    max-width:180px;
+    text-align:right;
+    white-space:nowrap;
+    vertical-align:middle;
+}
+
+/* Add Employee button */
+.add-employee-btn{
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    background: linear-gradient(90deg, var(--primary), var(--primary-dark)); /* purple gradient */
+    color: #ffffff;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 8px 20px rgba(91,24,154,0.12);
+    transition: transform .12s ease, box-shadow .12s ease;
+}
+.add-employee-btn:hover{ transform: translateY(-2px); box-shadow: 0 12px 30px rgba(91,24,154,0.16); }
+
+/* Remove / action button styled with palette (uses purple accent) */
+.remove-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:.5rem;
+    padding:.375rem .6rem;
+    border-radius:.375rem;
+    border:none;
+    color:#fff;
+    background: linear-gradient(90deg,var(--primary),var(--primary-dark));
+    cursor:pointer;
+    font-size:.875rem;
+}
+.remove-btn:hover{ filter:brightness(0.9); }
+
+/* Small action menu spacing */
+.action-menu{ display:inline-flex; gap:.25rem; }
+
+/* Avatar / name */
+.employee-name-cell{ display:flex; align-items:center; min-width:0; }
+.employee-avatar{
+    flex-shrink:0;
+    height:2.25rem;
+    width:2.25rem;
+    border-radius:9999px;
+    background: #f3e8ff; /* light purple */
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+.employee-info{ margin-left:0.75rem; overflow:hidden; }
+.employee-name{ font-weight:600; color:#111827; white-space:nowrap; text-overflow:ellipsis; overflow:hidden; }
+
+/* Badges */
+.role-badge{ display:inline-flex; padding:0.25rem 0.5rem; font-size:0.75rem; font-weight:600; border-radius:9999px; }
+.role-badge.manager{ background:#f3e8ff; color:var(--primary); }
+.role-badge.supervisor{ background:#efe6ff; color:#4c1d95; }
+.role-badge.staff{ background:#f3f4f6; color:#374151; }
+.role-badge.warehouse{ background: rgba(245,158,11,0.12); color: var(--gold-dark); }
+
+/* Pagination */
+#paginationContainer{ display:flex; gap:0.5rem; justify-content:center; align-items:center; margin-top:1rem; }
+#paginationContainer button{
+    padding:0.5rem 0.75rem;
+    border-radius:0.375rem;
+    border:none;
+    background:#f3f4f6;
+    color:#374151;
+    cursor:pointer;
+}
+#paginationContainer button[disabled]{ opacity:.5; pointer-events:none; }
+#paginationContainer button.active{ background: linear-gradient(90deg,var(--primary),var(--gold)); color:#fff; }
+
+/* Utility & responsiveness */
+@media (min-width:768px){
+    main.container{ padding-left:2rem; padding-right:2rem; }
+}

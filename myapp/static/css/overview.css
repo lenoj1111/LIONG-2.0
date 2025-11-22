@@ -1,0 +1,464 @@
+/* ...existing code... */
+/* Simplified: removed purple/gold palette — use neutral shadowed background */
+:root {
+    --bg: #f3f4f6;       /* soft light background */
+    --card: #ffffff;
+    --muted: #6b7280;
+
+    /* purple accents for buttons */
+    --primary: #6b21a8;
+    --primary-dark: #4c1d95;
+}
+
+/* Layout */
+body {
+    background-color: var(--bg);
+
+    /* subtle vignette / shadowed background */
+    background-image:
+      radial-gradient(ellipse at center, rgba(0,0,0,0.04) 0%, rgba(0,0,0,0.03) 40%, transparent 70%),
+      radial-gradient(ellipse at top left, rgba(0,0,0,0.02) 0%, transparent 30%);
+    background-attachment: fixed;
+    background-size: cover, cover;
+    background-repeat: no-repeat;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color-scheme: light;
+}
+
+/* remove animated gradient keyframes (no animation now) */
+/* ...existing code... */
+
+main {
+    max-width: 80rem;
+}
+
+main.container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+@media (max-width: 768px) {
+    main {
+        margin-left: 0;
+    }
+}
+
+@media (min-width: 768px) {
+    main {
+        margin-left: 16rem;
+    }
+}
+
+/* Header Section */
+.header-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+    gap: 1rem;
+}
+
+@media (min-width: 768px) {
+    .header-section {
+        flex-direction: row;
+        align-items: center;
+    }
+}
+
+h1 {
+    font-size: 1.875rem;
+    font-weight: bold;
+    color: #111827;
+}
+
+/* Header card: transparent over shadow background */
+.header-card {
+    background: transparent;
+    padding: 0.5rem 0;
+    border-radius: 0;
+    box-shadow: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* page title — make explicitly black to override any prior styles */
+.page-title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: #000000; /* black title per request */
+    margin: 0;
+}
+
+/* Buttons */
+.btn-primary {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    background-color: #374151;
+    color: white;
+    border-radius: 0.5rem;
+    transition: background-color 0.3s;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-primary:hover {
+    background-color: #111827;
+}
+
+/* Add employee button: neutral, subtle shadow */
+.add-employee-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+
+    /* purple solid/gradient for add button */
+    background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+    color: #ffffff;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 8px 20px rgba(107,33,168,0.12);
+    transition: transform .12s ease, box-shadow .12s ease, background-color .12s ease;
+    border: none;
+}
+
+.add-employee-btn .icon-small,
+.icon-small {
+    width: 1rem;
+    height: 1rem;
+    display: inline-block;
+}
+
+.add-employee-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(76,29,149,0.16);
+    /* keep hover darker purple */
+    background: linear-gradient(90deg, var(--primary-dark), #34135f);
+}
+.add-employee-btn:focus {
+    outline: 3px solid rgba(17,24,39,0.08);
+    outline-offset: 2px;
+}
+
+.stat-card {
+    background-color: var(--card);
+    border-radius: 0.5rem;
+    box-shadow: 0 6px 20px rgba(16,24,40,0.06); /* soft shadow for cards */
+    padding: 1.5rem;
+    width: 100%;
+}
+
+.stat-card-label {
+    font-size: 0.875rem;
+    color: var(--muted);
+}
+
+.stat-card-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #111827;
+}
+
+.stat-card-flex {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.icon-box {
+    height: 3rem;
+    width: 3rem;
+    border-radius: 9999px;
+    background: linear-gradient(135deg, rgba(0,0,0,0.04), rgba(0,0,0,0.02));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-box i {
+    color: #374151;
+}
+
+.dashboard-cards-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+@media (min-width: 640px) {
+    .dashboard-cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 768px) {
+    .dashboard-cards-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .dashboard-cards-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+.dashboard-card {
+    background-color: var(--card);
+    border-radius: 0.5rem;
+    box-shadow: 0 6px 20px rgba(16,24,40,0.06);
+    padding: 1.5rem;
+    width: 100%;
+    max-width: 100%;
+}
+
+.dashboard-card i {
+    height: 2rem;
+    width: 2rem;
+}
+
+/* Table Section */
+.table-container {
+    background-color: var(--card);
+    border-radius: 0.5rem;
+    box-shadow: 0 6px 20px rgba(16,24,40,0.06);
+    padding: 1.5rem;
+}
+
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+/* Select/Filter */
+.role-filter {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    background-color: var(--card);
+    color: #374151;
+    transition: border-color 0.3s;
+}
+
+.role-filter:hover {
+    border-color: #9ca3af;
+}
+
+.role-filter:focus {
+    outline: none;
+    border-color: #374151;
+}
+
+/* Table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background-color: #f3f4f6;
+}
+
+th {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #374151;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+th:first-child {
+    max-width: 220px;
+}
+
+tbody {
+    background-color: var(--card);
+    border-top: 1px solid #e5e7eb;
+}
+
+tbody tr {
+    border-bottom: 1px solid #e5e7eb;
+    transition: background-color 0.3s;
+}
+
+tbody tr:hover {
+    background-color: rgba(16,24,40,0.02);
+}
+
+td {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    white-space: nowrap;
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+td:first-child {
+    max-width: 220px;
+}
+
+.employee-name-cell {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+}
+
+.employee-avatar {
+    flex-shrink: 0;
+    height: 2.5rem;
+    width: 2.5rem;
+    border-radius: 9999px;
+    background: linear-gradient(135deg, rgba(0,0,0,0.04), rgba(0,0,0,0.02));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.employee-avatar i {
+    color: #374151;
+}
+
+.employee-info {
+    margin-left: 1rem;
+    min-width: 0;
+}
+
+.employee-name {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #111827;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Badges (neutral tones) */
+.role-badge {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    display: inline-flex;
+    font-size: 0.75rem;
+    line-height: 1.25rem;
+    font-weight: 600;
+    border-radius: 9999px;
+}
+
+.role-badge.manager {
+    background-color: rgba(55,65,81,0.08);
+    color: #374151;
+}
+
+.role-badge.supervisor {
+    background-color: rgba(55,65,81,0.06);
+    color: #374151;
+}
+
+.role-badge.staff {
+    background-color: #f3f4f6;
+    color: #374151;
+}
+
+.role-badge.warehouse {
+    background-color: rgba(16,24,40,0.04);
+    color: #374151;
+}
+
+/* Pagination */
+.pagination-container {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.pagination-btn {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: background-color 0.3s;
+    border: none;
+    cursor: pointer;
+}
+
+.pagination-btn.disabled {
+    background-color: #e5e7eb;
+    color: #9ca3af;
+    cursor: not-allowed;
+}
+
+.pagination-btn.active {
+    background-color: #374151;
+    color: white;
+}
+
+.pagination-btn:not(.disabled):not(.active) {
+    background-color: #e5e7eb;
+    color: #374151;
+}
+
+.pagination-btn:not(.disabled):not(.active):hover {
+    background-color: #d1d5db;
+}
+
+.pagination-dots {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    color: #4b5563;
+}
+
+.pagination-small-btn {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+/* small utility */
+.text-accent-gold { color: #374151; }
+.bg-accent-gold { background-color: #374151; color: #fff; }
+
+/* ...existing code... */

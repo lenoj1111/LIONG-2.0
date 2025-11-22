@@ -1,0 +1,126 @@
+/* Page base */
+body {
+    background-color: #f9fafb;
+    overflow-x: hidden;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+/* Main container */
+main.container {
+    max-width: 80rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+/* Cards / panels */
+.bg-white.rounded-xl.shadow-md,
+.bg-white.rounded-xl.shadow-xl {
+    background: #fff;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 12px rgba(17,24,39,0.06);
+}
+
+/* Form controls */
+input[type="text"],
+input[type="date"],
+select,
+textarea {
+    width: 100%;
+    padding: .5rem .75rem;
+    border-radius: .5rem;
+    border: 1px solid #d1d5db;
+    background: #fff;
+    box-sizing: border-box;
+    color: #111827;
+}
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+}
+
+/* Table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+}
+thead { background: #f3f4f6; }
+th, td {
+    padding: .75rem 1.5rem;
+    vertical-align: middle;
+    font-size: .875rem;
+}
+th { font-weight: 600; color: #6b7280; text-transform: uppercase; font-size: .75rem; }
+
+/* Modal */
+#requisitionModal {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.5);
+    z-index: 50;
+}
+#requisitionModal.hidden { display: none; }
+#requisitionModal .max-w-3xl {
+    width: 100%;
+    max-width: 48rem;
+    border-radius: 0.75rem;
+    overflow: hidden;
+}
+
+/* Modal header/footer */
+#requisitionModal .p-4 { padding: 1rem; }
+#requisitionModal .p-6 { padding: 1.5rem; }
+
+/* Items rows */
+#itemsWrapper .grid {
+    gap: .5rem;
+    align-items: end;
+}
+.productSelect, .productSelect:focus {
+    appearance: none;
+}
+
+/* Search results dropdown */
+#searchResults {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: .375rem;
+    box-shadow: 0 6px 18px rgba(15,23,42,0.06);
+}
+#searchResults.hidden { display: none; }
+#searchResults .p-2 { padding: .5rem; }
+
+/* Small utility styles */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    padding: .5rem .75rem;
+    border-radius: .5rem;
+    border: none;
+    cursor: pointer;
+}
+.btn-muted { background: #e5e7eb; color: #374151; }
+.btn-primary { background: #2563eb; color: #ffffff; }
+
+/* Badge styles (status) */
+.badge {
+    display:inline-flex;
+    padding: .25rem .5rem;
+    border-radius: .375rem;
+    font-size: .75rem;
+    font-weight: 600;
+}
+.badge.out { background:#fee2e2; color:#991b1b; }
+.badge.in  { background:#ecfdf5; color:#065f46; }
+
+/* Responsive tweaks */
+@media (min-width: 768px) {
+    main.container { padding-left: 2rem; padding-right: 2rem; }
+}
