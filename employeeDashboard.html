@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LIONG | Employee Dashboard</title>
+  <link rel="stylesheet" href="css/employeeDashboard.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+  <script src="components/navbar.js" defer></script>
+  <script src="components/footer.js" defer></script>
+</head>
+<body>
+  <!-- Sidebar Component -->
+  <custom-sidebar></custom-sidebar>
+
+  <!-- Main Content -->
+  <main class="main-container">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="header-content">
+        <div class="header-icon-wrapper">
+          <i class="fas fa-chart-line header-icon"></i>
+        </div>
+        <div class="header-text">
+          <h1 class="page-title">Employee Dashboard</h1>
+          <p class="page-subtitle">Welcome back, <span id="employeeName">Employee</span>! 👋</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <div class="date-time-display">
+          <div class="current-date">
+            <i class="fas fa-calendar-alt"></i>
+            <span id="currentDate"></span>
+          </div>
+          <div class="current-time">
+            <i class="fas fa-clock"></i>
+            <span id="currentTime"></span>
+          </div>
+        </div>
+        <button id="refreshDashboard" class="btn btn-outline">
+          <i class="fas fa-sync-alt"></i>
+          <span>Refresh</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Alert Container -->
+    <div id="alertContainer" class="alert-container"></div>
+
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+      <div class="stat-card stat-primary">
+        <div class="stat-icon-wrapper">
+          <div class="stat-icon">
+            <i class="fas fa-paper-plane"></i>
+          </div>
+        </div>
+        <div class="stat-content">
+          <span class="stat-label">Total Requests</span>
+          <h2 class="stat-value" id="totalRequests">0</h2>
+          <div class="stat-trend stat-up">
+            <i class="fas fa-arrow-up"></i>
+            <span>All time</span>
+          </div>
+        </div>
+        <div class="stat-sparkline" id="sparkline1"></div>
+      </div>
+
+      <div class="stat-card stat-warning">
+        <div class="stat-icon-wrapper">
+          <div class="stat-icon">
+            <i class="fas fa-clock"></i>
+          </div>
+        </div>
+        <div class="stat-content">
+          <span class="stat-label">Pending</span>
+          <h2 class="stat-value" id="pendingRequests">0</h2>
+          <div class="stat-trend stat-neutral">
+            <i class="fas fa-hourglass-half"></i>
+            <span>Awaiting review</span>
+          </div>
+        </div>
+        <div class="stat-sparkline" id="sparkline2"></div>
+      </div>
+
+      <div class="stat-card stat-success">
+        <div class="stat-icon-wrapper">
+          <div class="stat-icon">
+            <i class="fas fa-check-circle"></i>
+          </div>
+        </div>
+        <div class="stat-content">
+          <span class="stat-label">Approved</span>
+          <h2 class="stat-value" id="approvedRequests">0</h2>
+          <div class="stat-trend stat-up">
+            <i class="fas fa-thumbs-up"></i>
+            <span id="approvalRate">0%</span> success rate
+          </div>
+        </div>
+        <div class="stat-sparkline" id="sparkline3"></div>
+      </div>
+
+      <div class="stat-card stat-danger">
+        <div class="stat-icon-wrapper">
+          <div class="stat-icon">
+            <i class="fas fa-times-circle"></i>
+          </div>
+        </div>
+        <div class="stat-content">
+          <span class="stat-label">Denied</span>
+          <h2 class="stat-value" id="deniedRequests">0</h2>
+          <div class="stat-trend stat-down">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>Review needed</span>
+          </div>
+        </div>
+        <div class="stat-sparkline" id="sparkline4"></div>
+      </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="content-grid">
+      <!-- Left Column -->
+      <div class="left-column">
+        <!-- Requests Table Card -->
+        <div class="card card-table">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon">
+                <i class="fas fa-list"></i>
+              </div>
+              <div>
+                <h2>My Requests</h2>
+                <p class="card-subtitle">View and track your product requests</p>
+              </div>
+            </div>
+            <div class="card-actions">
+              <div class="filter-group">
+                <select id="statusFilter" class="filter-select">
+                  <option value="">All Status</option>
+                  <option value="Pending">Pending</option>
+                  <option value="Approved_Dep">Approved</option>
+                  <option value="Denied">Denied</option>
+                  <option value="Forwarded_Inv">Forwarded</option>
+                </select>
+              </div>
+              <button id="refreshTable" class="btn btn-icon" title="Refresh">
+                <i class="fas fa-sync-alt"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="data-table" id="requestsTable">
+                <thead>
+                  <tr>
+                    <th>
+                      <div class="th-content">
+                        <i class="fas fa-hashtag"></i>
+                        <span>Request ID</span>
+                      </div>
+                    </th>
+                    <th>
+                      <div class="th-content">
+                        <i class="fas fa-box"></i>
+                        <span>Product</span>
+                      </div>
+                    </th>
+                    <th>
+                      <div class="th-content">
+                        <i class="fas fa-calculator"></i>
+                        <span>Quantity</span>
+                      </div>
+                    </th>
+                    <th>
+                      <div class="th-content">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Date</span>
+                      </div>
+                    </th>
+                    <th>
+                      <div class="th-content">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Status</span>
+                      </div>
+                    </th>
+                    <th>
+                      <div class="th-content">
+                        <i class="fas fa-cog"></i>
+                        <span>Actions</span>
+                      </div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody id="requestsTableBody">
+                  <!-- Populated by JavaScript -->
+                </tbody>
+              </table>
+            </div>
+
+            <div class="table-footer">
+              <div class="showing-info" id="showingInfo">
+                Showing 0 to 0 of 0 entries
+              </div>
+              <div class="pagination" id="pagination">
+                <!-- Pagination buttons generated by JavaScript -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions Card -->
+        <div class="card card-actions">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon">
+                <i class="fas fa-bolt"></i>
+              </div>
+              <h2>Quick Actions</h2>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <div class="quick-actions-grid">
+              <a href="employee-request.html" class="action-btn action-primary">
+                <div class="action-icon">
+                  <i class="fas fa-plus-circle"></i>
+                </div>
+                <div class="action-content">
+                  <h3>New Request</h3>
+                  <p>Submit a product request</p>
+                </div>
+                <div class="action-arrow">
+                  <i class="fas fa-arrow-right"></i>
+                </div>
+              </a>
+
+              <button class="action-btn action-info" id="viewAllBtn">
+                <div class="action-icon">
+                  <i class="fas fa-history"></i>
+                </div>
+                <div class="action-content">
+                  <h3>View History</h3>
+                  <p>See all your requests</p>
+                </div>
+                <div class="action-arrow">
+                  <i class="fas fa-arrow-right"></i>
+                </div>
+              </button>
+
+              <button class="action-btn action-success" id="exportDataBtn">
+                <div class="action-icon">
+                  <i class="fas fa-download"></i>
+                </div>
+                <div class="action-content">
+                  <h3>Export Data</h3>
+                  <p>Download your records</p>
+                </div>
+                <div class="action-arrow">
+                  <i class="fas fa-arrow-right"></i>
+                </div>
+              </button>
+
+              <a href="employee-account.html" class="action-btn action-warning">
+                <div class="action-icon">
+                  <i class="fas fa-user-cog"></i>
+                </div>
+                <div class="action-content">
+                  <h3>My Account</h3>
+                  <p>Manage your profile</p>
+                </div>
+                <div class="action-arrow">
+                  <i class="fas fa-arrow-right"></i>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column -->
+      <aside class="right-column">
+        <!-- Activity Timeline Card -->
+        <div class="card card-timeline">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon">
+                <i class="fas fa-stream"></i>
+              </div>
+              <h2>Recent Activity</h2>
+            </div>
+            <button id="refreshActivity" class="btn btn-icon" title="Refresh">
+              <i class="fas fa-sync-alt"></i>
+            </button>
+          </div>
+
+          <div class="card-body">
+            <div class="timeline" id="activityTimeline">
+              <!-- Populated by JavaScript -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Monthly Summary Card -->
+        <div class="card card-summary">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon">
+                <i class="fas fa-chart-pie"></i>
+              </div>
+              <h2>Monthly Summary</h2>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <div class="summary-stats">
+              <div class="summary-item">
+                <div class="summary-icon summary-primary">
+                  <i class="fas fa-calendar-check"></i>
+                </div>
+                <div class="summary-content">
+                  <span class="summary-value" id="monthlyRequests">0</span>
+                  <span class="summary-label">This Month</span>
+                </div>
+              </div>
+
+              <div class="summary-item">
+                <div class="summary-icon summary-success">
+                  <i class="fas fa-check-double"></i>
+                </div>
+                <div class="summary-content">
+                  <span class="summary-value" id="monthlyApproved">0</span>
+                  <span class="summary-label">Approved</span>
+                </div>
+              </div>
+
+              <div class="summary-item">
+                <div class="summary-icon summary-warning">
+                  <i class="fas fa-hourglass-start"></i>
+                </div>
+                <div class="summary-content">
+                  <span class="summary-value" id="monthlyPending">0</span>
+                  <span class="summary-label">Pending</span>
+                </div>
+              </div>
+
+              <div class="summary-item">
+                <div class="summary-icon summary-info">
+                  <i class="fas fa-clock"></i>
+                </div>
+                <div class="summary-content">
+                  <span class="summary-value" id="avgResponseTime">-</span>
+                  <span class="summary-label">Avg. Response</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="progress-section">
+              <div class="progress-header">
+                <span class="progress-label">Monthly Goal</span>
+                <span class="progress-percentage" id="goalPercentage">0%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" id="goalProgress" style="width: 0%"></div>
+              </div>
+              <p class="progress-info">
+                <span id="goalCurrent">0</span> of <span id="goalTarget">10</span> requests this month
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tips & Help Card -->
+        <div class="card card-tips">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon">
+                <i class="fas fa-lightbulb"></i>
+              </div>
+              <h2>Tips & Help</h2>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <div class="tips-list">
+              <div class="tip-item tip-primary">
+                <i class="fas fa-info-circle"></i>
+                <div>
+                  <strong>Quick Search:</strong>
+                  <p>Use <kbd>Ctrl+K</kbd> to quickly search products</p>
+                </div>
+              </div>
+
+              <div class="tip-item tip-success">
+                <i class="fas fa-check-circle"></i>
+                <div>
+                  <strong>Pro Tip:</strong>
+                  <p>Add detailed purpose for faster approval</p>
+                </div>
+              </div>
+
+              <div class="tip-item tip-warning">
+                <i class="fas fa-exclamation-triangle"></i>
+                <div>
+                  <strong>Important:</strong>
+                  <p>Check stock availability before requesting</p>
+                </div>
+              </div>
+
+              <div class="tip-item tip-info">
+                <i class="fas fa-question-circle"></i>
+                <div>
+                  <strong>Need Help?:</strong>
+                  <p>Contact your department admin</p>
+                </div>
+              </div>
+            </div>
+
+            <button class="btn btn-block btn-secondary mt-3">
+              <i class="fas fa-book"></i>
+              <span>View Full Guide</span>
+            </button>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- Footer Component -->
+  <custom-footer></custom-footer>
+
+  <!-- Request Details Modal -->
+  <div id="requestModal" class="modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content modal-large">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fas fa-file-alt"></i>
+          <h3>Request Details</h3>
+        </div>
+        <button id="closeRequestModal" class="btn-close">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <div class="modal-body" id="requestModalBody">
+        <!-- Populated by JavaScript -->
+      </div>
+
+      <div class="modal-footer">
+        <button id="closeModalBtn" class="btn btn-secondary">
+          <i class="fas fa-times"></i>
+          <span>Close</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Export Options Modal -->
+  <div id="exportModal" class="modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fas fa-download"></i>
+          <h3>Export Data</h3>
+        </div>
+        <button id="closeExportModal" class="btn-close">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <p class="modal-description">Choose your preferred export format:</p>
+        
+        <div class="export-options">
+          <button class="export-option" id="exportCSV">
+            <div class="export-icon">
+              <i class="fas fa-file-csv"></i>
+            </div>
+            <div class="export-content">
+              <h4>CSV Format</h4>
+              <p>Comma-separated values for Excel</p>
+            </div>
+          </button>
+
+          <button class="export-option" id="exportJSON">
+            <div class="export-icon">
+              <i class="fas fa-file-code"></i>
+            </div>
+            <div class="export-content">
+              <h4>JSON Format</h4>
+              <p>Structured data for developers</p>
+            </div>
+          </button>
+
+          <button class="export-option" id="exportPDF">
+            <div class="export-icon">
+              <i class="fas fa-file-pdf"></i>
+            </div>
+            <div class="export-content">
+              <h4>PDF Document</h4>
+              <p>Printable report format</p>
+            </div>
+          </button>
+
+          <button class="export-option" id="exportPrint">
+            <div class="export-icon">
+              <i class="fas fa-print"></i>
+            </div>
+            <div class="export-content">
+              <h4>Print</h4>
+              <p>Print directly to printer</p>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" class="loading-overlay">
+    <div class="spinner-container">
+      <div class="spinner"></div>
+      <p class="loading-text">Loading dashboard...</p>
+    </div>
+  </div>
+
+  <script src="js/employeeDashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LIONG | Employee Product Requests</title>
+  <link rel="stylesheet" href="css/employee-request.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+  <script src="components/navbar.js" defer></script>
+  <script src="components/footer.js" defer></script>
+</head>
+<body>
+  <!-- Sidebar Component -->
+  <custom-sidebar></custom-sidebar>
+
+  <!-- Main Content -->
+  <main class="main-container">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="header-content">
+        <div class="header-icon-wrapper">
+          <i class="fas fa-file-invoice header-icon"></i>
+        </div>
+        <div class="header-text">
+          <h1 class="page-title">Employee Request</h1>
+          <p class="page-subtitle">Submit your product stock out requests</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="viewHistoryBtn" class="btn btn-secondary">
+          <i class="fas fa-history"></i>
+          <span>View History</span>
+        </button>
+        <button id="refreshDataBtn" class="btn btn-outline">
+          <i class="fas fa-sync-alt"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Alert Messages -->
+    <div id="alertContainer" class="alert-container"></div>
+
+    <!-- Main Grid -->
+    <div class="content-grid">
+      <!-- Request Form Card -->
+      <section class="card card-primary">
+        <div class="card-header">
+          <div class="card-title">
+            <div class="card-icon">
+              <i class="fas fa-clipboard-list"></i>
+            </div>
+            <h2>Request Stock Out</h2>
+          </div>
+          <div class="card-badge">
+            <span class="badge badge-gold">New Request</span>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <form id="requestForm" class="request-form">
+            <!-- Employee Name -->
+            <div class="form-group">
+              <label for="requestedByOut" class="form-label required">
+                <i class="fas fa-user"></i>
+                Requested By (Employee Name)
+              </label>
+              <div class="input-group">
+                <input 
+                  id="requestedByOut" 
+                  type="text" 
+                  class="form-control" 
+                  placeholder="Enter your full name"
+                  required
+                  autocomplete="name">
+                <span class="input-icon">
+                  <i class="fas fa-user-circle"></i>
+                </span>
+              </div>
+              <span class="form-hint">This will be used to track your request</span>
+            </div>
+
+            <!-- Product Search & Select -->
+            <div class="form-group">
+              <label for="productSearch2" class="form-label required">
+                <i class="fas fa-box"></i>
+                Product Selection
+              </label>
+              
+              <!-- Search Input -->
+              <div class="search-wrapper">
+                <input 
+                  id="productSearch2" 
+                  type="text" 
+                  placeholder="🔍 Search products by name..." 
+                  class="form-control search-input">
+                <span class="search-icon">
+                  <i class="fas fa-search"></i>
+                </span>
+              </div>
+
+              <!-- Product Select Dropdown -->
+              <div class="select-wrapper">
+                <select id="productSelect" class="form-control form-select" required>
+                  <option value="">-- Select a product --</option>
+                </select>
+                <span class="select-arrow">
+                  <i class="fas fa-chevron-down"></i>
+                </span>
+              </div>
+
+              <!-- Product Info Display -->
+              <div id="productInfoCard" class="product-info-card" style="display: none;">
+                <div class="product-info-header">
+                  <i class="fas fa-info-circle"></i>
+                  <span>Product Details</span>
+                </div>
+                <div class="info-grid">
+                  <div class="info-row">
+                    <span class="info-label">Product Name:</span>
+                    <span id="displayProductName" class="info-value">-</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Unit:</span>
+                    <span id="displayUnit" class="info-value">-</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Available Quantity:</span>
+                    <span id="displayQuantity" class="info-value highlight">-</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- No Products Warning -->
+              <div id="productHint" class="alert alert-warning" style="display: none;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>No products available. Please contact the administrator.</span>
+              </div>
+            </div>
+
+            <!-- Quantity Input -->
+            <div class="form-group">
+              <label for="requestQuantity" class="form-label required">
+                <i class="fas fa-calculator"></i>
+                Quantity to Request
+              </label>
+              <div class="quantity-control">
+                <button type="button" id="decreaseQty" class="qty-btn">
+                  <i class="fas fa-minus"></i>
+                </button>
+                <input 
+                  id="requestQuantity" 
+                  type="number" 
+                  min="1" 
+                  value="1" 
+                  class="form-control qty-input"
+                  required>
+                <button type="button" id="increaseQty" class="qty-btn">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+              <span class="form-hint">Minimum quantity: 1</span>
+            </div>
+
+            <!-- Purpose/Remarks -->
+            <div class="form-group">
+              <label for="requestPurpose" class="form-label">
+                <i class="fas fa-comment-alt"></i>
+                Purpose / Remarks
+              </label>
+              <textarea 
+                id="requestPurpose" 
+                class="form-control" 
+                rows="4"
+                placeholder="Optional: Describe the purpose of this request..."
+                maxlength="500"></textarea>
+              <div class="char-counter">
+                <i class="fas fa-keyboard"></i>
+                <span id="charCount">0</span> / 500 characters
+              </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+              <button type="reset" class="btn btn-secondary">
+                <i class="fas fa-undo"></i>
+                <span>Reset Form</span>
+              </button>
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-paper-plane"></i>
+                <span>Submit Request</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- Sidebar Content -->
+      <aside class="sidebar-content">
+        <!-- Recent Requests Card -->
+        <section class="card card-secondary">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon">
+                <i class="fas fa-history"></i>
+              </div>
+              <h2>Recent Requests</h2>
+            </div>
+            <button id="refreshRequests" class="btn btn-icon" title="Refresh">
+              <i class="fas fa-sync-alt"></i>
+            </button>
+          </div>
+
+          <div class="card-body">
+            <div id="recentRequestsList" class="requests-list">
+              <!-- Populated by JavaScript -->
+            </div>
+          </div>
+        </section>
+
+        <!-- Quick Stats Card -->
+        <section class="card card-stats">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon">
+                <i class="fas fa-chart-bar"></i>
+              </div>
+              <h2>Your Stats</h2>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <div class="stats-grid">
+              <div class="stat-item stat-total">
+                <div class="stat-icon">
+                  <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="stat-content">
+                  <span class="stat-value" id="statTotal">0</span>
+                  <span class="stat-label">Total Requests</span>
+                </div>
+              </div>
+
+              <div class="stat-item stat-today">
+                <div class="stat-icon">
+                  <i class="fas fa-calendar-day"></i>
+                </div>
+                <div class="stat-content">
+                  <span class="stat-value" id="statToday">0</span>
+                  <span class="stat-label">Today</span>
+                </div>
+              </div>
+
+              <div class="stat-item stat-week">
+                <div class="stat-icon">
+                  <i class="fas fa-calendar-week"></i>
+                </div>
+                <div class="stat-content">
+                  <span class="stat-value" id="statWeek">0</span>
+                  <span class="stat-label">This Week</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Quick Tips Card -->
+        <section class="card card-tips">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon">
+                <i class="fas fa-lightbulb"></i>
+              </div>
+              <h2>Quick Tips</h2>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <div class="tips-list">
+              <div class="tip-item">
+                <i class="fas fa-check-circle"></i>
+                <span>Check product availability before requesting</span>
+              </div>
+              <div class="tip-item">
+                <i class="fas fa-check-circle"></i>
+                <span>Provide clear purpose for faster approval</span>
+              </div>
+              <div class="tip-item">
+                <i class="fas fa-check-circle"></i>
+                <span>Track your requests in history</span>
+              </div>
+              <div class="tip-item">
+                <i class="fas fa-check-circle"></i>
+                <span>Use <kbd>Ctrl+K</kbd> to quick search</span>
+              </div>
+            </div>
+          </div>
+        </section>
+      </aside>
+    </div>
+  </main>
+
+  <!-- Footer Component -->
+  <custom-footer></custom-footer>
+
+  <!-- Success Modal -->
+  <div id="successModal" class="modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content modal-success">
+      <div class="modal-header">
+        <div class="success-icon">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <h3>Request Submitted Successfully!</h3>
+        <p class="modal-subtitle">Your request has been recorded and is pending review</p>
+      </div>
+      <div class="modal-body">
+        <div class="request-summary">
+          <div class="summary-header">
+            <i class="fas fa-receipt"></i>
+            <span>Request Details</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Request ID:</span>
+            <span id="modalRequestId" class="summary-value badge badge-purple">-</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Product:</span>
+            <span id="modalProduct" class="summary-value">-</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Quantity:</span>
+            <span id="modalQuantity" class="summary-value">-</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Requested By:</span>
+            <span id="modalRequestedBy" class="summary-value">-</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Date & Time:</span>
+            <span id="modalDate" class="summary-value">-</span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="modalClose" class="btn btn-primary">
+          <i class="fas fa-check"></i>
+          <span>OK, Got It</span>
+        </button>
+        <button id="modalNewRequest" class="btn btn-secondary">
+          <i class="fas fa-plus"></i>
+          <span>New Request</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- History Modal -->
+  <div id="historyModal" class="modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content modal-large">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fas fa-history"></i>
+          <h3>Request History</h3>
+        </div>
+        <button id="closeHistoryModal" class="btn-close">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="table-controls">
+          <div class="search-wrapper">
+            <input 
+              id="historySearch" 
+              type="text" 
+              placeholder="🔍 Search requests..." 
+              class="form-control search-input">
+            <span class="search-icon">
+              <i class="fas fa-search"></i>
+            </span>
+          </div>
+          <div class="control-buttons">
+            <button id="exportCSVBtn" class="btn btn-secondary">
+              <i class="fas fa-file-csv"></i>
+              <span>Export CSV</span>
+            </button>
+            <button id="exportJSONBtn" class="btn btn-outline">
+              <i class="fas fa-file-code"></i>
+              <span>JSON</span>
+            </button>
+            <button id="printBtn" class="btn btn-outline">
+              <i class="fas fa-print"></i>
+              <span>Print</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table id="historyTable" class="data-table">
+            <thead>
+              <tr>
+                <th>Request ID</th>
+                <th>Date</th>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Requested By</th>
+                <th>Purpose</th>
+              </tr>
+            </thead>
+            <tbody id="historyTableBody">
+              <!-- Populated by JavaScript -->
+            </tbody>
+          </table>
+        </div>
+
+        <div id="historyPagination" class="pagination-container"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" class="loading-overlay">
+    <div class="spinner-container">
+      <div class="spinner"></div>
+      <p class="loading-text">Processing request...</p>
+    </div>
+  </div>
+
+  <script src="js/employee-request.js"></script>
+</body>
+</html>
