@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Employee Product Requests</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+  <script src="components/navbar.js"></script>
+  <script src="components/footer.js"></script>
+</head>
+<body class="bg-gray-50">
+  <custom-sidebar></custom-sidebar>
+
+  <main class="container mx-auto px-4 py-8" style="margin-left:250px; max-width:1200px;">
+    <div class="mb-6">
+      <h1 class="text-2xl font-bold">Employee Request</h1>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+      <!-- Request to Add Product -->
+      <section class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-lg font-semibold mb-4">Request to Add Product</h2>
+        <form id="addProductForm" class="grid grid-cols-1 gap-3">
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Requested By (Employee Name)</label>
+            <input id="requestedByAdd" type="text" class="w-full px-3 py-2 border rounded" placeholder="Your name">
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Product Name</label>
+            <input id="productName" required type="text" class="w-full px-3 py-2 border rounded" placeholder="e.g. Widget A">
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Unit</label>
+            <input id="productUnit" required type="text" class="w-full px-3 py-2 border rounded" placeholder="e.g. pcs, box, kg (you can type)">
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Quantity</label>
+            <input id="productQuantity" type="number" min="0" value="0" class="w-full px-3 py-2 border rounded">
+          </div>
+
+          <div class="flex justify-end gap-2 pt-2">
+            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Request to Add</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Stock Out Section -->
+      <section class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-lg font-semibold mb-4">Request Stock Out</h2>
+
+        <form id="requestForm" class="grid grid-cols-1 gap-3">
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Requested By (Employee Name)</label>
+            <input id="requestedByOut" type="text" class="w-full px-3 py-2 border rounded" placeholder="Your name">
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Product</label>
+            <input id="productSearch2" type="text" placeholder="Search product..." 
+              class="w-full px-3 py-2 border rounded mb-2 text-sm">
+            <select id="productSelect" class="w-full px-3 py-2 border rounded">
+              <option value="">-- Select product --</option>
+            </select>
+            <p id="productHint" class="text-xs text-red-500 hidden mt-1">No products available.</p>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Quantity to Remove</label>
+            <input id="requestQuantity" type="number" min="1" value="1" class="w-full px-3 py-2 border rounded">
+          </div>
+
+          <div class="flex justify-end gap-2 pt-2">
+            <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Request Stock Out</button>
+          </div>
+        </form>
+      </section>
+    </div>
+  </main>
+
+  <custom-footer></custom-footer>
+
+  <script>
+    // Simple utilities
+    const todayISO = () => new Date().toISOString().slice(0, 10);
+    const generateId = (prefix = 'ID') => prefix + '-' + Date.now().toString(36).slice(-8);
+    const escapeHtml = (s) => (s === 0 ? '0' : (s ? String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;') : ''));
+
+    // Storage keys
+    const KEY_PRODUCTS = 'products';
+    const KEY_REQUESTS = 'productRequests';
+
+    // State
+    let products = JSON.parse(localStorage.getItem(KEY_PRODUCTS)) || [];
+    let requests = JSON.parse(localStorage.getItem(KEY_REQUESTS)) || [];
+
+    // DOM refs
+    const addProductForm = document.getElementById('addProductForm');
+    const requestForm = document.getElementById('requestForm');
+    const requestedByAdd = document.getElementById('requestedByAdd');
+    const requestedByOut = document.getElementById('requestedByOut');
+    const productSearch2 = document.getElementById('productSearch2');
+    const productSelect = document.getElementById('productSelect');
+    const productHint = document.getElementById('productHint');
+
+    // Populate product select
+    function populateProductSelect() {
+      const searchTerm = productSearch2.value.toLowerCase();
+      productSelect.innerHTML = '<option value="">-- Select product --</option>';
+      
+      products.forEach(p => {
+        if (p.name.toLowerCase().includes(searchTerm)) {
+          const opt = document.createElement('option');
+          opt.value = p.id;
+          opt.textContent = `${p.name} — ${p.unit} (qty: ${p.quantity})`;
+          productSelect.appendChild(opt);
+        }
+      });
+
+      // Show hint if no products
+      if (products.length === 0) {
+        productHint.classList.remove('hidden');
+      } else {
+        productHint.classList.add('hidden');
+      }
+    }
+
+    // CRUD Actions
+    function saveProducts() {
+      localStorage.setItem(KEY_PRODUCTS, JSON.stringify(products));
+    }
+
+    function saveRequests() {
+      localStorage.setItem(KEY_REQUESTS, JSON.stringify(requests));
+    }
+
+    addProductForm.addEventListener('submit', (ev) => {
+      ev.preventDefault();
+      const requestedBy = requestedByAdd.value.trim();
+      const name = document.getElementById('productName').value.trim();
+      const unit = document.getElementById('productUnit').value.trim();
+      const qty = Number(document.getElementById('productQuantity').value) || 0;
+      
+      if (!requestedBy) {
+        alert('Please enter your name.');
+        return;
+      }
+      if (!name || !unit) { 
+        alert('Product name and unit are required.'); 
+        return; 
+      }
+
+      // Check for duplicate
+      const exists = products.some(p => p.name.toLowerCase() === name.toLowerCase());
+      if (exists) {
+        alert(`Product "${name}" already exists.`);
+        return;
+      }
+
+      const prod = {
+        id: generateId('PROD'),
+        name,
+        unit,
+        quantity: qty,
+        dateAdded: todayISO()
+      };
+
+      // Create stock in request
+      const req = {
+        id: generateId('REQ'),
+        date: todayISO(),
+        requestedBy,
+        productId: prod.id,
+        productName: prod.name,
+        unit: prod.unit,
+        type: 'in',
+        quantity: qty
+      };
+
+      products.push(prod);
+      requests.push(req);
+      saveProducts();
+      saveRequests();
+      populateProductSelect();
+      addProductForm.reset();
+      alert(`✓ Product "${name}" requested by ${requestedBy} and stock in recorded.`);
+    });
+
+    requestForm.addEventListener('submit', (ev) => {
+      ev.preventDefault();
+      const requestedBy = requestedByOut.value.trim();
+      const productId = productSelect.value;
+      const qty = Number(document.getElementById('requestQuantity').value) || 0;
+
+      if (!requestedBy) {
+        alert('Please enter your name.');
+        return;
+      }
+      if (!productId) { 
+        alert('Select a product.'); 
+        return; 
+      }
+      if (qty <= 0) { 
+        alert('Quantity must be at least 1.'); 
+        return; 
+      }
+
+      const product = products.find(p => p.id === productId);
+      if (!product) { 
+        alert('Product not found.'); 
+        return; 
+      }
+
+      if (qty > Number(product.quantity)) {
+        alert('Insufficient product quantity for stock out.');
+        return;
+      }
+
+      // Update product quantity
+      product.quantity = Number(product.quantity) - qty;
+      saveProducts();
+
+      // Create request record
+      const req = {
+        id: generateId('REQ'),
+        date: todayISO(),
+        requestedBy,
+        productId: product.id,
+        productName: product.name,
+        unit: product.unit,
+        type: 'out',
+        quantity: qty
+      };
+
+      requests.push(req);
+      saveRequests();
+
+      populateProductSelect();
+      requestForm.reset();
+      alert(`✓ Stock out requested by ${requestedBy} for "${product.name}" (${qty} ${product.unit}).`);
+    });
+
+    // Event listeners
+    productSearch2.addEventListener('input', populateProductSelect);
+
+    // Init
+    document.addEventListener('DOMContentLoaded', () => {
+      if (window.feather) feather.replace();
+
+      products = JSON.parse(localStorage.getItem(KEY_PRODUCTS)) || [];
+      requests = JSON.parse(localStorage.getItem(KEY_REQUESTS)) || [];
+
+      populateProductSelect();
+    });
+  </script>
+</body>
+</html>
